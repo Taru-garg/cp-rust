@@ -29,7 +29,7 @@ impl Args {
 
     fn extract_copy_tagets(path: &Path) -> Vec<PathBuf> {
         if path.is_dir() {
-            let data: Vec<PathBuf> = std::fs::read_dir(path)
+            return std::fs::read_dir(path)
                 .unwrap()
                 .into_iter()
                 .map(|x| {
@@ -41,8 +41,6 @@ impl Args {
                 })
                 .flatten()
                 .collect();
-
-            return data;
         }
         return vec![path.to_path_buf()];
     }
