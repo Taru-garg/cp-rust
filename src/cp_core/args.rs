@@ -15,16 +15,16 @@ impl Args {
         return std::path::Path::new(path).exists();
     }
 
-    fn check_paths(source: &String, target: &String) -> bool {
+    fn check_paths(source: &String, target: &String) -> Result<(), String> {
         if !Args::path_exists(source) {
-            panic!("Source Path does not exist");
+            return Err(String::from("Source Path doesn't exist"));
         }
 
         if Args::path_exists(target) {
-            panic!("Target Path already exists");
+            return Err(String::from("Target Path already exists"));
         }
 
-        return true;
+        return Ok(());
     }
 
     fn extract_copy_tagets(path: &Path) -> Vec<PathBuf> {
@@ -50,7 +50,7 @@ impl Args {
         let source_path = env::args().nth(1).expect("No Source path provided!");
         let target_path = env::args().nth(2).expect("No Target path provided!");
 
-        if Args::check_paths(&source_path, &target_path) == true {
+        if Args::check_paths(&source_path, &target_path).is_ok() {
             let source_files = Args::extract_copy_tagets(&std::path::Path::new(&source_path));
             return Ok(Args {
                 source: source_files,
