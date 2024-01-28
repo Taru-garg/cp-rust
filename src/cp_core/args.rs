@@ -30,7 +30,13 @@ impl Args {
     fn extract_copy_sources(path: &PathBuf) -> Vec<PathBuf> {
         if path.is_dir() {
             return std::fs::read_dir(path)
-                .unwrap()
+                .expect(
+                    format!(
+                        "Unable to read the directory at path : {}",
+                        path.to_str().unwrap()
+                    )
+                    .as_str(),
+                )
                 .into_iter()
                 .map(|x| {
                     if x.as_ref().unwrap().path().is_dir() == true {
@@ -47,16 +53,19 @@ impl Args {
 
     fn extract_copy_targets(
         sources: &Vec<PathBuf>,
-        initial_source: &String,
+        initial_source: &Path,
         target: &String,
     ) -> Vec<PathBuf> {
         return sources
             .into_iter()
             .map(|x| {
-                let rel = x
-                    .strip_prefix(initial_source)
-                    .expect("Invalid source path found in files resolved for copying");
-                return Path::new(target).join(rel).to_path_buf();
+                if initial_source.is_dir() {
+                    let rel = x
+                        .strip_prefix(initial_source)
+                        .expect("Invalid source path found in files resolved for copying");
+                    return Path::new(target).join(rel).to_path_buf();
+                }
+                return PathBuf::from(target);
             })
             .collect::<Vec<_>>();
     }
@@ -68,7 +77,7 @@ impl Args {
         if Args::check_paths(&source_path, &target_path).is_ok() {
             let source_files = Args::extract_copy_sources(&PathBuf::from(&source_path));
             let target_files =
-                Args::extract_copy_targets(&source_files, &source_path, &target_path);
+                Args::extract_copy_targets(&source_files, &Path::new(&source_path), &target_path);
             return Ok(Args {
                 source: source_files,
                 target: target_files,
