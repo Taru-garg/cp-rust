@@ -53,8 +53,8 @@ impl Args {
 
     fn extract_copy_targets(
         sources: &Vec<PathBuf>,
-        initial_source: &Path,
-        target: &String,
+        initial_source: &PathBuf,
+        target: &PathBuf,
     ) -> Vec<PathBuf> {
         return sources
             .into_iter()
@@ -76,8 +76,11 @@ impl Args {
 
         if Args::check_paths(&source_path, &target_path).is_ok() {
             let source_files = Args::extract_copy_sources(&PathBuf::from(&source_path));
-            let target_files =
-                Args::extract_copy_targets(&source_files, &Path::new(&source_path), &target_path);
+            let target_files = Args::extract_copy_targets(
+                &source_files,
+                &PathBuf::from(&source_path),
+                &PathBuf::from(&target_path),
+            );
             return Ok(Args {
                 source: source_files,
                 target: target_files,
