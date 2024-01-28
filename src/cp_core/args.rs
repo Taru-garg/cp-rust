@@ -27,14 +27,14 @@ impl Args {
         return Ok(());
     }
 
-    fn extract_copy_sources(path: &Path) -> Vec<PathBuf> {
+    fn extract_copy_sources(path: &PathBuf) -> Vec<PathBuf> {
         if path.is_dir() {
             return std::fs::read_dir(path)
                 .unwrap()
                 .into_iter()
                 .map(|x| {
                     if x.as_ref().unwrap().path().is_dir() == true {
-                        return Args::extract_copy_sources(x.as_ref().unwrap().path().as_path());
+                        return Args::extract_copy_sources(&x.unwrap().path());
                     } else {
                         return vec![x.as_ref().unwrap().path()];
                     }
@@ -66,7 +66,7 @@ impl Args {
         let target_path = env::args().nth(2).expect("No Target path provided!");
 
         if Args::check_paths(&source_path, &target_path).is_ok() {
-            let source_files = Args::extract_copy_sources(&std::path::Path::new(&source_path));
+            let source_files = Args::extract_copy_sources(&PathBuf::from(&source_path));
             let target_files =
                 Args::extract_copy_targets(&source_files, &source_path, &target_path);
             return Ok(Args {
