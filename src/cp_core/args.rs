@@ -1,12 +1,9 @@
-use std::{
-    env,
-    path::{Path, PathBuf},
-};
+use std::{env, path::PathBuf};
 
 #[derive(Debug)]
 pub struct Args {
-    source: Vec<PathBuf>,
-    target: Vec<PathBuf>,
+    pub source: Vec<PathBuf>,
+    pub target: Vec<PathBuf>,
     options: Option<CopyOptions>,
 }
 
@@ -63,7 +60,7 @@ impl Args {
                     let rel = x
                         .strip_prefix(initial_source)
                         .expect("Invalid source path found in files resolved for copying");
-                    return Path::new(target).join(rel).to_path_buf();
+                    return target.as_path().join(rel).to_path_buf();
                 }
                 return PathBuf::from(target);
             })
